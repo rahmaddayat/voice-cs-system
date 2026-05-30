@@ -10,11 +10,11 @@ WHISPER_DIR = os.path.join(BASE_DIR, "whisper.cpp")
 
 # TODO: Lengkapi path ke binary whisper-cli
 # Gunakan os.path.join() untuk menggabungkan WHISPER_DIR, "build", "bin", dan "whisper-cli"
-WHISPER_BINARY = ...
+WHISPER_BINARY = os.path.join(WHISPER_DIR, "build", "bin", "whisper-cli.exe")
 
 # TODO: Lengkapi path ke file model Whisper (contoh: ggml-large-v3-turbo.bin)
 # Gunakan os.path.join() untuk mengarah ke file model di dalam folder "models"
-WHISPER_MODEL_PATH = ...
+WHISPER_MODEL_PATH = os.path.join(WHISPER_DIR, "models", "ggml-large-v3-turbo.bin")
 
 def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
     """
@@ -27,19 +27,24 @@ def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         audio_path = os.path.join(tmpdir, f"{uuid.uuid4()}{file_ext}")
-        result_path = os.path.join(tmpdir, "transcription.txt")
+        # output file prefix tanpa ekstensi - whisper akan otomatis menambahkan .txt
+        output_prefix = os.path.join(tmpdir, "transcription")
+        result_path = output_prefix + ".txt"
 
         # simpan audio ke file temporer
         with open(audio_path, "wb") as f:
             f.write(file_bytes)
 
         # jalankan whisper.cpp dengan subprocess
+        # -l id : paksa deteksi bahasa Indonesia agar nama tempat seperti
+        #         "Banda Aceh" tidak ditranskrip sebagai bahasa Inggris
         cmd = [
             WHISPER_BINARY,
             "-m", WHISPER_MODEL_PATH,
             "-f", audio_path,
+            "-l", "id",          # <-- paksa Bahasa Indonesia
             "-otxt",
-            "-of", os.path.join(tmpdir, "..", "transcription")
+            "-of", output_prefix
         ]
 
         try:
@@ -47,9 +52,9 @@ def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
         except subprocess.CalledProcessError as e:
             return f"[ERROR] Whisper failed: {e}"
         
-        # baca hasil transkripsi
+        # baca hasil transkripsi dan bersihkan spasi/newline berlebih
         try:
             with open(result_path, "r", encoding="utf-8") as result_file:
-                return result_file.read()
+                return result_file.read().strip()
         except FileNotFoundError:
             return "[ERROR] Transcription file not found"
