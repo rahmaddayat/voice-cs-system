@@ -48,3 +48,6 @@ app/whisper.cpp/samples/*.wav
 cmake-build-debug/
 *.log
 .DS_Store
+.env
+data/
+coqui_utils/
