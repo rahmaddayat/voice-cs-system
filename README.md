@@ -1,37 +1,39 @@
-# Voice Chatbot UAS – STT, Gemini LLM, TTS Integration
+# Link Video Presentasi :
+- https://drive.google.com/drive/folders/1IA_JmLD6lj9bTyKUMGjILpX-DwPEaQYe?usp=sharing
 
-Proyek UAS ini merupakan aplikasi chatbot berbasis suara yang memungkinkan pengguna berbicara langsung melalui antarmuka web. Sistem akan mengenali suara pengguna, mengubahnya menjadi teks (Speech-to-Text), memprosesnya menggunakan model bahasa besar (Gemini API), lalu mengubah hasil jawabannya kembali menjadi suara (Text-to-Speech).
+# Voice Speech-to-Speech Code-Switching System (ID-EN-AR)
 
-## 📌 Fitur Utama
-- 🎙️ Speech-to-Text (STT) menggunakan `whisper.cpp` dari OpenAI.
-- 🧠 LLM Integration menggunakan Google Gemini API untuk menghasilkan respons dalam Bahasa Indonesia.
-- 🔊 Text-to-Speech (TTS) menggunakan model Coqui TTS (Indonesian TTS).
-- 🧪 Antarmuka pengguna interaktif berbasis `Gradio` untuk pengujian langsung dari browser.
+Sistem *Speech-to-Speech* (S2S) berbasis web yang dirancang untuk menangani fenomena pencampuran bahasa (*code-switching*) yang mengintegrasikan tiga bahasa sekaligus: **Bahasa Indonesia (ID), Bahasa Inggris (EN), dan Bahasa Arab (AR)**. Proyek ini dibangun sebagai komponen utama dalam pemenuhan UAS Praktikum Pemrosesan Bahasa Alami (NLP).
 
-## 🗂️ Struktur Proyek
-```
-voice_chatbot_project/
-│
-├── app/
-│   ├── main.py            # Endpoint utama FastAPI
-│   ├── llm.py             # Integrasi Gemini API
-│   ├── stt.py             # Transkripsi suara (whisper.cpp)
-│   ├── tts.py             # TTS dengan Coqui
-│   └── whisper.cpp/       # Hasil clone whisper.cpp
-│   └── coqui_utils/       # Model dan config Coqui TTS
-│
-├── gradio_app/
-│   └── app.py             # Frontend dengan Gradio
-│
-├── .env                   # Menyimpan Gemini API Key
-├── requirements.txt       # Daftar dependensi Python
-```
+Sistem ini mengintegrasikan komponen *Speech-to-Text* (STT) lokal, penalaran berbasis *Large Language Model* (LLM) melalui API, dan komponen *Text-to-Speech* (TTS) ke dalam satu kesatuan *pipeline* multimodal yang stabil.
 
-## 📚 Catatan
-- Semua file audio menggunakan format `.wav`.
-- Untuk menghasilkan fonem seperti `dəˈnɡan`, teks dari Gemini harus dikonversi ke fonetik.
-- Disarankan menggunakan model Whisper: `ggml-large-v3-turbo`.
-- Gunakan speaker: `wibowo` dari model Coqui v1.2.
+---
 
-## 👨‍💻 Dibuat Untuk
-Proyek UAS mata kuliah *Pemrosesan Bahasa Alami* — Semester Genap 2024/2025.
+## 🚀 Fitur Utama
+
+* **Multimodal Pipeline (End-to-End):** Pemrosesan langsung dari input suara pengguna hingga menghasilkan respons suara balik secara sinkron melalui protokol HTTP.
+* **Dua Mode Operasional Luaran:**
+    * **Mode *Preserve*:** Mempertahankan preferensi dan gaya bahasa campuran asal penutur (ID-EN-AR) dalam teks respons.
+    * **Mode *ID Normalisasi*:** Mengonversi struktur kalimat acak/campuran menjadi Bahasa Indonesia formal yang baku sebelum diproses oleh komponen suara.
+* **Language Tagging & Preprocessing:** Pemetaan otomatis elemen bahasa per segmen kata (misal: `[AR:uridu]`, `[EN:arrange]`) guna meningkatkan kualitas pelafalan fonem.
+* **Antarmuka Interaktif:** Aplikasi web front-end yang responsif dan intuitif menggunakan *Gradio Framework*.
+* **Rate Limit & Resource Management:** Implementasi *asynchronous handling* dan otomatisasi pembersihan berkas audio sementara untuk efisiensi penyimpanan server.
+
+---
+
+## 🛠️ Arsitektur & Teknologi Stack
+
+* **Sisi Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python)
+* **Sisi Frontend:** [Gradio](https://gradio.app/)
+* **Speech-to-Text (STT):** [OpenAI Whisper-Large](https://github.com/openai/whisper) (Inferensi Lokal)
+* **Cerebral/LLM Core:** [Gemma-4-31B-It](https://ai.google.dev/gemma) (via API Cloud dengan skema proteksi token)
+* **Text-to-Speech (TTS):** [Coqui TTS](https://github.com/coqui-ai/TTS)
+
+---
+
+## 📦 Panduan Instalasi dan Setup
+
+### 1. Kloning Repositori
+```bash
+git clone [https://github.com/rahmaddayat/voice-cs-system.git](https://github.com/rahmaddayat/voice-cs-system.git)
+cd voice-cs-system
